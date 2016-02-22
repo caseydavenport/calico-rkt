@@ -15,7 +15,7 @@
 import json
 import unittest
 
-from mock import patch, MagicMock, ANY
+from mock import patch, MagicMock, ANY, call
 from netaddr import IPNetwork
 from nose.tools import assert_equal, assert_false, assert_raises
 from nose_parameterized import parameterized
@@ -634,8 +634,11 @@ class CniPluginTest(unittest.TestCase):
 
         # Assert
         assert_equal(ep, None)
-        self.plugin._client.get_endpoint.assert_called_once_with(hostname=ANY, 
-                orchestrator_id="cni", workload_id=self.plugin.container_id)
+        calls = [call(hostname=ANY, orchestrator_id="cni", 
+                      workload_id=self.plugin.workload_id),
+                 call(hostname=ANY, orchestrator_id="cni", 
+                      workload_id=self.plugin.workload_id)]
+        self.plugin._client.get_endpoint.assert_has_calls(calls)
 
     def test_get_endpoint_multiple_endpoints(self):
         # Mock
@@ -711,7 +714,7 @@ class CniPluginTest(unittest.TestCase):
         # Mock out _execute to throw SystemExit
         m_os.environ = self.env
         m_sys.stdin.readlines.return_value = json.dumps(self.network_config)
-        m_plugin(self.env, self.network_config).execute.side_effect = Exception 
+        m_plugin(self.env, self.network_config).execute.side_effect = Exception
         m_plugin.reset_mock()
 
         # Call

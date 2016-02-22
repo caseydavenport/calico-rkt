@@ -61,6 +61,7 @@ ERR_CODE_GENERIC = 100   # Use this for all errors.
 
 # Policy modes.
 POLICY_MODE_ANNOTATIONS = "k8s-annotations"
+POLICY_MODE_DENY_INBOUND = "default-deny-inbound"
 
 # Logging Configuration
 LOG_DIR = "/var/log/calico/cni"
