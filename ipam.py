@@ -105,10 +105,23 @@ class IpamPlugin(object):
             _log.info("Releasing addresses on workload: %s", 
                       self.workload_id)
             try:
-                self.datastore_client.release_ip_by_handle(handle_id=self.workload_id)
+                self.datastore_client.release_ip_by_handle(
+                        handle_id=self.workload_id
+                )
             except KeyError:
                 _log.warning("No IPs assigned to workload: %s", 
                              self.workload_id)
+                try:
+                    # Try to release using the container ID.  Earlier
+                    # versions of IPAM used the container ID alone 
+                    # as the handle. This allows us to be back-compatible.
+                    _log.debug("Try release using container ID")
+                    self.datastore_client.release_ip_by_handle(
+                            handle_id=self.container_id
+                    )
+                except KeyError:
+                    _log.debug("No IPs assigned to container: %s",
+                               self.container_id)
 
     def _assign_address(self, handle_id):
         """
