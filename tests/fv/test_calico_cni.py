@@ -196,7 +196,7 @@ class CniPluginFvTest(unittest.TestCase):
 
         # Assert an endpoint was created.
         self.client.create_endpoint.assert_called_once_with(ANY, 
-                "cni", workload_id, [IPNetwork(ip4)])
+                "cni", workload_id, [IPNetwork(ip4), IPNetwork(ip6)])
 
         # Assert a profile was applied.
         self.client.append_profiles_to_endpoint.assert_called_once_with(
@@ -252,7 +252,7 @@ class CniPluginFvTest(unittest.TestCase):
 
         # Assert an endpoint was created.
         self.client.create_endpoint.assert_called_once_with(ANY, 
-                "cni", workload_id, [IPNetwork(ip4)])
+                "cni", workload_id, [IPNetwork(ip4), IPNetwork(ip6)])
 
         # Assert profile was created.
         self.client.create_profile.assert_called_once_with(
