@@ -171,13 +171,22 @@ class CniPlugin(object):
 
         _log.debug("Checking for existing Calico endpoint")
         endpoint = self._get_endpoint()
-        if endpoint:
+        if endpoint and not self.k8s_namespace:
+            # Not running under Kubernetes.
             # This endpoint already exists, add it to another network.
             _log.info("Endpoint for container exists - add to new network")
             output = self._add_existing_endpoint(endpoint)
+        elif endpoint and self.k8s_namespace:
+            # Running under Kubernetes and we've received a create for 
+            # an existing pod.  This means the old pod has been destoryed
+            # under our feet and we need to set up networking on the new one.
+            # We should also clean up any existing endpoint.
+            _log.info("Kubernetes pod has been recreated")
+            self._remove_stale_endpoint(endpoint)
+            output = self._add_new_endpoint()
         else:
             # No endpoint exists - we need to configure a new one.
-            _log.info("Configuring a new Endpoint for container")
+            _log.info("No endpoint exists for workload - creating")
             output = self._add_new_endpoint()
 
         # If all successful, print the IPAM plugin's output to stdout.
@@ -192,6 +201,7 @@ class CniPlugin(object):
         Handled adding a new container to a Calico network.
         """
         # Assign IP addresses using the given IPAM plugin.
+        _log.info("Configuring a new Endpoint")
         ipv4, ipv6, ipam_result = self._assign_ips(self.ipam_env)
 
         # Filter out addresses that didn't get assigned.
@@ -279,7 +289,7 @@ class CniPlugin(object):
         # Step 3: Delete the veth interface for this endpoint.
         self._remove_veth(endpoint)
 
-        # Step 4: Delete the Calico endpoint.
+        # Step 4: Delete the Calico workload.
         self._remove_workload()
 
         # Step 5: Delete any profiles for this endpoint
@@ -454,10 +464,23 @@ class CniPlugin(object):
         _log.info("Created Calico endpoint with IP address(es) %s", ip_list)
         return endpoint
 
+    def _remove_stale_endpoint(self, endpoint):
+        """
+        Removes the given endpoint from Calico.  
+        To be used when we discover a stale endpoint that is no longer in use.
+        Note that this doesn't release IP allocations, so we will leak
+        assignments in this case.
+        """
+        _log.info("Removing stale Calico endpoint '%s'", endpoint)
+        try:
+            self._client.remove_endpoint(endpoint)
+        except KeyError:
+            # Shouldn't hit this since we know the workload exists.
+            _log.info("Error removing stale endpoint, ignoring")
+
     def _remove_workload(self):
         """Removes the given endpoint from the Calico datastore
 
-        :param endpoint:
         :return: None
         """
         try:
