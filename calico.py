@@ -183,6 +183,13 @@ class CniPlugin(object):
             # We should also clean up any existing endpoint.
             _log.info("Kubernetes pod has been recreated")
             self._remove_stale_endpoint(endpoint)
+
+            # Release any previous IP addresses assigned to this workload.
+            self.ipam_env[CNI_COMMAND_ENV] = CNI_CMD_DELETE
+            self._release_ip(self.ipam_env)
+
+            # Configure the new workload.
+            self.ipam_env[CNI_COMMAND_ENV] = CNI_CMD_ADD
             output = self._add_new_endpoint()
         else:
             # No endpoint exists - we need to configure a new one.
