@@ -127,11 +127,15 @@ class CniPlugin(object):
 
         if self.k8s_namespace and self.k8s_pod_name:
             self.workload_id = "%s.%s" % (self.k8s_namespace, self.k8s_pod_name)
+            self.orchestrator_id = "k8s"
         else:
             self.workload_id = self.container_id
+            self.orchestrator_id = "cni"
         """
-        Identifier for the workload.  In Kubernetes, this is the
-        pod's namespace and name.  Otherwise, this is the container ID.
+        Configure orchestrator specific settings.
+        workload_id: In Kubernetes, this is the pod's namespace and name.  
+                     Otherwise, this is the container ID.
+        orchestrator_id: Either "k8s" or "cni".
         """
 
     def execute(self):
@@ -455,7 +459,7 @@ class CniPlugin(object):
                    self.workload_id)
         try:
             endpoint = self._client.create_endpoint(HOSTNAME,
-                                                    ORCHESTRATOR_ID,
+                                                    self.orchestrator_id,
                                                     self.workload_id,
                                                     ip_list)
         except (AddrFormatError, KeyError) as e:
@@ -494,7 +498,7 @@ class CniPlugin(object):
             _log.info("Removing Calico workload '%s'",
                     self.workload_id)
             self._client.remove_workload(hostname=HOSTNAME,
-                                         orchestrator_id=ORCHESTRATOR_ID,
+                                         orchestrator_id=self.orchestrator_id,
                                          workload_id=self.workload_id)
         except KeyError:
             # Attempt to remove the workload using the container ID as the
@@ -505,7 +509,7 @@ class CniPlugin(object):
                          self.workload_id)
             try:
                 self._client.remove_workload(hostname=HOSTNAME,
-                                             orchestrator_id=ORCHESTRATOR_ID,
+                                             orchestrator_id="cni",
                                              workload_id=self.container_id)
             except KeyError:
                 _log.warning("Could not find workload with container ID %s.",
@@ -570,7 +574,7 @@ class CniPlugin(object):
                        self.workload_id)
             endpoint = self._client.get_endpoint(
                 hostname=HOSTNAME,
-                orchestrator_id=ORCHESTRATOR_ID,
+                orchestrator_id=self.orchestrator_id,
                 workload_id=self.workload_id
             )
         except KeyError:
@@ -581,7 +585,7 @@ class CniPlugin(object):
             try:
                 endpoint = self._client.get_endpoint(
                     hostname=HOSTNAME,
-                    orchestrator_id=ORCHESTRATOR_ID,
+                    orchestrator_id="cni",
                     workload_id=self.container_id
                 )
             except KeyError:

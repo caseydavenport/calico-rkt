@@ -17,7 +17,6 @@ import socket
 
 
 # System Specific Constants
-ORCHESTRATOR_ID = "cni"
 HOSTNAME = socket.gethostname()
 
 # Regex to parse CNI_ARGS.  Looks for key value pairs separated by an equals
