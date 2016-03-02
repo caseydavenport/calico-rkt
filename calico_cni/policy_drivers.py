@@ -137,7 +137,7 @@ class DefaultDenyInboundDriver(DefaultPolicyDriver):
                      outbound_rules=[Rule(action="allow")])
 
     def remove_profile(self):
-        _log.info("Null policy driver, do not remove profile")
+        _log.info("default-deny-inbound driver, do not remove profile")
 
 
 class KubernetesDefaultPolicyDriver(DefaultPolicyDriver):

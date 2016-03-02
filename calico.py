@@ -478,9 +478,9 @@ class CniPlugin(object):
     def _remove_stale_endpoint(self, endpoint):
         """
         Removes the given endpoint from Calico.  
-        To be used when we discover a stale endpoint that is no longer in use.
-        Note that this doesn't release IP allocations, so we will leak
-        assignments in this case.
+        Called when we discover a stale endpoint that is no longer in use.
+        Note that this doesn't release IP allocations - that must be done
+        using the designated IPAM plugin.
         """
         _log.info("Removing stale Calico endpoint '%s'", endpoint)
         try:
@@ -495,8 +495,7 @@ class CniPlugin(object):
         :return: None
         """
         try:
-            _log.info("Removing Calico workload '%s'",
-                    self.workload_id)
+            _log.info("Removing Calico workload '%s'", self.workload_id)
             self._client.remove_workload(hostname=HOSTNAME,
                                          orchestrator_id=self.orchestrator_id,
                                          workload_id=self.workload_id)
@@ -563,6 +562,9 @@ class CniPlugin(object):
     @handle_datastore_error
     def _get_endpoint(self):
         """Get endpoint matching self.workload_id.
+
+        If we cannot find an endpoint using self.workload_id, try 
+        using self.container_id.
 
         Return None if no endpoint is found.
         Exits with an error if multiple endpoints are found.
