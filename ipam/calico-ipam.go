@@ -1,3 +1,16 @@
+// Copyright 2015 Tigera Inc
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 package main
 
 import (
@@ -12,8 +25,8 @@ import (
 	"github.com/containernetworking/cni/pkg/skel"
 	"github.com/containernetworking/cni/pkg/types"
 	"github.com/projectcalico/calico-cni/utils"
-	"github.com/tigera/libcalico-go/lib/client"
-	cnet "github.com/tigera/libcalico-go/lib/net"
+	"github.com/projectcalico/libcalico-go/lib/client"
+	cnet "github.com/projectcalico/libcalico-go/lib/net"
 )
 
 func main() {
@@ -88,11 +101,17 @@ func cmdAdd(args *skel.CmdArgs) error {
 		}
 
 		if num4 == 1 {
+			if len(assignedV4) != num4 {
+				return fmt.Errorf("Failed to request %d IPv4 addresses. IPAM allocated only %d.", num4, len(assignedV4))
+			}
 			ipV4Network := net.IPNet{IP: assignedV4[0].IP, Mask: net.CIDRMask(32, 32)}
 			r.IP4 = &types.IPConfig{IP: ipV4Network}
 		}
 
 		if num6 == 1 {
+			if len(assignedV6) != num6 {
+				return fmt.Errorf("Failed to request %d IPv6 addresses. IPAM allocated only %d.", num6, len(assignedV6))
+			}
 			ipV6Network := net.IPNet{IP: assignedV6[0].IP, Mask: net.CIDRMask(128, 128)}
 			r.IP6 = &types.IPConfig{IP: ipV6Network}
 		}
