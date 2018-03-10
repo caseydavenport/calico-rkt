@@ -3,6 +3,7 @@
 !k8s-install/scripts/calico.conf.default
 !dist/amd64/calico
 !dist/amd64/calico-ipam
+!dist/amd64/calico-ipam-convert
 !dist/amd64/flannel
 !dist/amd64/loopback
 !dist/amd64/host-local

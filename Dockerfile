@@ -11,6 +11,8 @@ ADD dist/amd64/calico-ipam /opt/cni/bin/calico-ipam
 ADD k8s-install/scripts/install-cni.sh /install-cni.sh
 ADD k8s-install/scripts/calico.conf.default /calico.conf.tmp
 
+ADD dist/amd64/calico-ipam-convert /calico-ipam-convert
+
 ENV PATH=$PATH:/opt/cni/bin
 VOLUME /opt/cni
 WORKDIR /opt/cni/bin

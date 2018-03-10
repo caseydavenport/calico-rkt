@@ -1,5 +1,5 @@
-hash: 2eac1673e133e238800faefa5553a1b0a89c8aba4205e7d538e8de3f57ef3e2a
-updated: 2018-03-08T10:39:43.919669278-08:00
+hash: 52aa87885b5cea00df317b623058370f571f82680f84c4d79fee6d19cffcfc07
+updated: 2018-03-09T13:50:50.414877666-08:00
 imports:
 - name: cloud.google.com/go
   version: 3b1ae45394a234c385be014e9a488f2bb6eef821
@@ -191,7 +191,8 @@ imports:
 - name: github.com/projectcalico/go-yaml-wrapper
   version: 598e54215bee41a19677faa4f0c32acd2a87eb56
 - name: github.com/projectcalico/libcalico-go
-  version: 5f90a75a16b8c4b94fd045afbfbb545194b451ac
+  version: 8fb24967b604e8980a0b00213f11e6200872f553
+  repo: git@github.com:caseydavenport/libcalico-go.git
   subpackages:
   - lib/apiconfig
   - lib/apis/v1
@@ -205,9 +206,6 @@ imports:
   - lib/backend/k8s/conversion
   - lib/backend/k8s/resources
   - lib/backend/model
-  - lib/backend/syncersv1/felixsyncer
-  - lib/backend/syncersv1/updateprocessors
-  - lib/backend/watchersyncer
   - lib/clientv2
   - lib/clientv3
   - lib/errors
@@ -232,11 +230,11 @@ imports:
   subpackages:
   - prometheus
 - name: github.com/prometheus/client_model
-  version: 99fa1f4be8e564e8a6b613da7fa6f46c9edafc6c
+  version: 6f3806018612930941127f2a7c6c453ba2c527d2
   subpackages:
   - go
 - name: github.com/prometheus/common
-  version: 6fb6fce6f8b75884b92e1889c150403fc0872c5e
+  version: e3fb1a1acd7605367a2b378bc2e2f893c05174b7
   subpackages:
   - expfmt
   - internal/bitbucket.org/ww/goautoneg
@@ -316,7 +314,7 @@ imports:
   - unicode/norm
   - width
 - name: google.golang.org/appengine
-  version: 5bee14b453b4c71be47ec1781b0fa61c2ea182db
+  version: 9d8544a6b2c7df9cff240fcf92d7b2f59bc13416
   subpackages:
   - internal
   - internal/app_identity

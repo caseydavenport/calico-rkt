@@ -124,6 +124,12 @@ $(DIST)/calico-ipam: $(SRCFILES) vendor
 	CGO_ENABLED=0 go build -v -i -o $(DIST)/calico-ipam  \
 	-ldflags "-X main.VERSION=$(CALICO_CNI_VERSION) -s -w" ipam/calico-ipam.go
 
+## Build the IPAM conversion helper 
+$(DIST)/calico-ipam-convert: $(SRCFILES) vendor
+	mkdir -p $(@D)
+	CGO_ENABLED=0 go build -v -i -o $(DIST)/calico-ipam-convert  \
+	-ldflags "-X main.VERSION=$(CALICO_CNI_VERSION) -s -w" ipam_conversion/main.go
+
 .PHONY: test
 ## Run the unit tests.
 test: $(DIST)/calico $(DIST)/calico-ipam $(DIST)/host-local run-etcd run-k8s-apiserver test-install-cni
