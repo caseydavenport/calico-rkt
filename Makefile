@@ -125,6 +125,7 @@ release-verify: release-prereqs
 release-notes: release-prereqs
 	mkdir -p dist
 	echo "# Changelog" > release-notes-$(VERSION)
+	echo "" >> release-notes-$(VERSION)
 	sh -c "git cherry -v $(PREVIOUS_RELEASE) | cut '-d ' -f 2- | sed 's/^/- /' >> release-notes-$(VERSION)"
 
 ## Pushes a github release and release artifacts produced by `make release-build`.
@@ -137,10 +138,10 @@ release-publish: release-prereqs
 	docker push quay.io/calico/cni$(ARCHTAG):$(VERSION)
 
 	# Push GCR images.
-	docker push gcr.io/projectcalico-org/cni:$(ARCHTAG):$(VERSION)
-	docker push eu.gcr.io/projectcalico-org/cni:$(ARCHTAG):$(VERSION)
-	docker push asia.gcr.io/projectcalico-org/cni:$(ARCHTAG):$(VERSION)
-	docker push us.gcr.io/projectcalico-org/cni:$(ARCHTAG):$(VERSION)
+	docker push gcr.io/projectcalico-org/cni$(ARCHTAG):$(VERSION)
+	docker push eu.gcr.io/projectcalico-org/cni$(ARCHTAG):$(VERSION)
+	docker push asia.gcr.io/projectcalico-org/cni$(ARCHTAG):$(VERSION)
+	docker push us.gcr.io/projectcalico-org/cni$(ARCHTAG):$(VERSION)
 
 	@echo "Finalize the GitHub release based on the pushed tag."
 	@echo "Attach the $(DIST)/calico and $(DIST)/calico-ipam binaries."
